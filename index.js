@@ -43,6 +43,7 @@ async function sendPhotoToTelegramBot(photoDataUrl) {
         body: formData
     });
     console.log(response);
+    displayRandomCelebrity();
 }
 
 async function displayRandomCelebrity() {

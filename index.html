@@ -1,41 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Know Which Celebrity You Look Like</title>
+	<title>Find Your Celebrity Lookalike</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-    <h1>Know Which Celebrity You Look Like</h1>
-    <button onclick="takePicture()">Click Here</button>
-
-    <script>
-        function takePicture() {
-            navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
-                var video = document.createElement('video');
-                var canvas = document.createElement('canvas');
-                video.srcObject = stream;
-                video.addEventListener('loadedmetadata', function () {
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                    var imgData = canvas.toDataURL();
-                    fetch('/sendImage', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            image: imgData
-                        })
-                    }).then(function (response) {
-                        console.log(response);
-                        location.reload();
-                    });
-                });
-                video.play();
-            });
-        }
-    </script>
+	<h1>Find Your Celebrity Lookalike</h1>
+	<p>Click the button below to take a picture and find out which celebrity you look like:</p>
+	<button onclick="capture()">Click Here</button>
+	<script src="script.js"></script>
 </body>
 </html>

